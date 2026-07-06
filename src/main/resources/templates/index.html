@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121214;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: #1a1a1e;
+            padding: 30px;
+            border-radius: 80px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            width: 320px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #a0a0a5;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            background-color: #26262b;
+            border: 1px solid #1a1a2b;
+            color: #ffffff;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #8ca2c6;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #111c2e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0f1d3e;
+        }
+
+        .error-msg {
+            color: #f87171;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Control de Acceso</h2>
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="usuario">Usuario (Nombre):</label>
+            <input type="text" id="usuario" required placeholder="Ej: jimmy">
+        </div>
+        <div class="form-group">
+            <label for="documento">Contraseña (N° Documento):</label>
+            <input type="password" id="documento" required placeholder="Ej: 12345678">
+        </div>
+        <button type="submit">Ingresar</button>
+        <div id="error" class="error-msg">Usuario o documento incorrectos.</div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const usuarioInput = document.getElementById('usuario').value.trim();
+        const documentoInput = document.getElementById('documento').value.trim();
+        const errorDiv = document.getElementById('error');
+
+        errorDiv.style.display = 'none';
+
+        try {
+            const response = await fetch('http://localhost:8080/persona/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    usuario: usuarioInput,
+                    documento: documentoInput
+                })
+            });
+
+            if (response.ok) {
+                const usuarioLogueado = await response.json();
+
+                // CÓDIGO COMPLETO EN ACCIÓN:
+                // Guardamos el nombre para los mensajes de bienvenida visuales
+                sessionStorage.setItem('usuarioLogueado', usuarioLogueado.nombre);
+
+                // Guardamos el ID real de la base de datos para enlazar y filtrar las citas
+                sessionStorage.setItem('usuarioLogueadoId', usuarioLogueado.id);
+
+                // Redireccionamos a la vista de citas personalizadas
+                window.location.href = 'index2.html';
+            } else if (response.status === 401) {
+                errorDiv.style.display = 'block';
+            } else {
+                throw new Error("Error inesperado en el servidor");
+            }
+
+        } catch (error) {
+            console.error('Error de conexión:', error);
+            alert("No se pudo establecer conexión con el servidor de la clínica.");
+        }
+    });
+</script>
+
+</body>
+</html>

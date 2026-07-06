@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: sitema-clinica
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/clinica_db?serverTimezone=UTC&useSSL=false
+    username: root
+    password: Cody
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
