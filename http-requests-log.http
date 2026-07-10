@@ -122,7 +122,7 @@
 <body>
 
 <div class="usuario-banner">
-  <h3 style="margin: 0; color: #ffffff;">Hi Hitler camarada: <span id="nombreUsuarioSpan" style="color: #bb862c;">Cargando...</span></h3>
+  <h3 style="margin: 0; color: #ffffff;">Hi: <span id="nombreUsuarioSpan" style="color: #bb862c;">Cargando...</span></h3>
 </div>
 
 <h2>Registrar Nueva Cita</h2>
@@ -169,7 +169,6 @@
 <table>
   <thead>
   <tr>
-    <th>ID Cita</th>
     <th>Día</th>
     <th>Hora</th>
     <th>Sede</th>
@@ -184,27 +183,19 @@
 <script>
   const API_URL = 'http://localhost:8080/cita';
 
-  // Obtenemos los datos guardados del usuario en el login.
-  // IMPORTANTE: Asegúrate de guardar el objeto completo o el ID del usuario en tu fetch de Login.
   const usuarioLogueadoNombre = sessionStorage.getItem('usuarioLogueado');
 
-  // Para pruebas dinámicas, asumiremos que guardas el ID de la persona en sessionStorage como 'usuarioLogueadoId'.
-  // Si en tu login guardaste el JSON completo, puedes usar JSON.parse().
-  const usuarioId = sessionStorage.getItem('usuarioLogueadoId') || 1; // Por defecto asigna 1 si no encuentra
+  const usuarioId = sessionStorage.getItem('usuarioLogueadoId') || 1;
 
-  // Mostrar el nombre del usuario arriba
   if (usuarioLogueadoNombre) {
     document.getElementById('nombreUsuarioSpan').innerText = usuarioLogueadoNombre.toUpperCase();
   } else {
-    // Si intentan entrar a index2.html sin loguearse, los bota al login
     window.location.href = 'index.html';
   }
 
-  // Al cargar la página, traer SOLAMENTE las citas de este usuario
   document.addEventListener('DOMContentLoaded', cargarCitas);
 
   function cargarCitas() {
-    // Enviamos el ID del usuario como parámetro de consulta (?personaId=X)
     fetch(`${API_URL}?personaId=${usuarioId}`)
             .then(response => response.json())
             .then(citas => {
@@ -214,7 +205,6 @@
               citas.forEach(cita => {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
-                        <td>${cita.id}</td>
                         <td>${cita.dia}</td>
                         <td>${cita.hora}</td>
                         <td>${cita.sede}</td>
@@ -238,7 +228,6 @@
       hora: document.getElementById('hora').value,
       sede: document.getElementById('sede').value,
       doctor: document.getElementById('doctor').value,
-      // Pasamos el objeto persona con su respectivo ID para cumplir con la relación @ManyToOne de Java
       persona: {
         id: parseInt(usuarioId)
       }
@@ -253,7 +242,7 @@
             .then(data => {
               alert('Cita registrada con éxito.');
               document.getElementById('formCita').reset();
-              cargarCitas(); // Refresca la tabla mostrando solo sus citas
+              cargarCitas();
             })
             .catch(error => {
               console.error('Error:', error);
@@ -261,18 +250,14 @@
             });
   });
 
-  // Función para Cancelar (Eliminar) Cita
   function cancelarCita(id) {
     if (confirm('¿Estás seguro de que deseas cancelar esta cita?')) {
-      const citaAEliminar = { id: id };
 
-      fetch(`${API_URL}/eliminar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(citaAEliminar)
+      fetch(`${API_URL}/${id}`, {
+        method: 'DELETE'
       })
               .then(response => {
-                if(response.ok) {
+                if (response.ok) {
                   alert('Cita cancelada correctamente.');
                   cargarCitas();
                 } else {

@@ -123,14 +123,10 @@
             if (response.ok) {
                 const usuarioLogueado = await response.json();
 
-                // CÓDIGO COMPLETO EN ACCIÓN:
-                // Guardamos el nombre para los mensajes de bienvenida visuales
                 sessionStorage.setItem('usuarioLogueado', usuarioLogueado.nombre);
 
-                // Guardamos el ID real de la base de datos para enlazar y filtrar las citas
                 sessionStorage.setItem('usuarioLogueadoId', usuarioLogueado.id);
 
-                // Redireccionamos a la vista de citas personalizadas
                 window.location.href = 'index2.html';
             } else if (response.status === 401) {
                 errorDiv.style.display = 'block';
@@ -140,7 +136,7 @@
 
         } catch (error) {
             console.error('Error de conexión:', error);
-            alert("No se pudo establecer conexión con el servidor de la clínica.");
+            alert("NOSE pudo establecer conexión con el servidor de la clínica.");
         }
     });
 </script>
